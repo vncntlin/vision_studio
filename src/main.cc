@@ -42,41 +42,67 @@ int main(int argc, char *argv[])
     setup();
 
     int id = 0;
-    int id_record = 0;
-    int result = 0;
+    int output_record = 0;
+    int output = 0;
+    int left_result = 0;
+    int right_result = 0;
     while (true)
     {
-        hx_drv_uart_print("Start time count: %5d.%1d\n", msec_x100 / 10, msec_x100 % 10);
+        // hx_drv_uart_print("Start time count: %5d.%1d\n", msec_x100 / 10, msec_x100 % 10);
         switch (id)
         {
         case 0: // Right
-            hx_drv_uart_print("Himax:\n");
+            hx_drv_uart_print("RIGHT:\n");
             break;
-        case 1: // Center
-            hx_drv_uart_print("Center:\n");
-            break;
-        case 2: // Left
-            hx_drv_uart_print("USB:\n");
+        // case 1: // Center
+        //     hx_drv_uart_print("Center:\n");
+        //     break;
+        case 1: // Left
+            hx_drv_uart_print("LEFT:\n");
             break;
         default:
             break;
         }
 
-        result = loop(id);
-
-        if (result != 0)
-            if (result * 3 + id != id_record)
+        if (id == 0)
+        {
+            right_result = loop(id);
+        }
+        if (id == 1)
+        {
+            left_result = loop(id);
+            hx_drv_uart_print("----------------------------------------------\n");
+            hx_drv_uart_print("Right result = %d, Left result = %d\n", right_result, left_result);
+            if ((right_result != 0) || (left_result != 0))
             {
-                PLAY_AUDIO(result);
-                PLAY_AUDIO(id + 4);
-                id_record = result * 3 + id;
-            }
+                
+                if (right_result == left_result) // center
+                {
+                    output = 3 * right_result + 1;
+                }
+                else if (right_result != 0) // right
+                {
+                    output = 3 * right_result + 0;
+                }
+                else // left
+                {
+                    output = 3 * left_result + 2;
+                }
 
-        msec_x100 = msec_x100 + 5;
+                if (output != output_record)
+                {
+                    PLAY_AUDIO(output / 3);
+                    PLAY_AUDIO(output % 3 + 4);
+                    output_record = output;
+                }
+            }
+        }
+        hx_drv_uart_print("----------------------------------------------\n");
+        // msec_x100 = msec_x100 + 5;
         delay_ms(500);
 
-        if (id < 2)
-            id++;
+        if (id == 0)
+            id = 1;
         else
             id = 0;
     }

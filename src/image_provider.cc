@@ -42,23 +42,23 @@ TfLiteStatus GetImage(tflite::ErrorReporter *error_reporter, int image_width,
     img_ptr = (uint8_t *)g_pimg_config.raw_address;
     break;
   case 1:
-    img_ptr = (uint8_t *)g_pimg_config.raw_address + g_pimg_config.img_width * (g_pimg_config.img_height / 4);
+    img_ptr = (uint8_t *)g_pimg_config.raw_address + g_pimg_config.img_width * (g_pimg_config.img_height / 3);
     break;
-  case 2:
-    img_ptr = (uint8_t *)g_pimg_config.raw_address + g_pimg_config.img_width * (g_pimg_config.img_height * 2 / 4);
-    break;
+  // case 2:
+  //   img_ptr = (uint8_t *)g_pimg_config.raw_address + g_pimg_config.img_width * (g_pimg_config.img_height * 2 / 4);
+  //   break;
   default:
     break;
   }
 
   hx_drv_image_rescale((uint8_t *)img_ptr,
-                       g_pimg_config.img_width, g_pimg_config.img_height / 2,
+                       g_pimg_config.img_width, g_pimg_config.img_height * 2 / 3,
                        image_data_person, image_width, image_height);
   hx_drv_image_rescale((uint8_t *)img_ptr,
-                       g_pimg_config.img_width, g_pimg_config.img_height / 2,
+                       g_pimg_config.img_width, g_pimg_config.img_height * 2 / 3,
                        image_data_car, image_width, image_height);
   hx_drv_image_rescale((uint8_t *)img_ptr,
-                       g_pimg_config.img_width, g_pimg_config.img_height / 2,
+                       g_pimg_config.img_width, g_pimg_config.img_height * 2 / 3,
                        image_data_bicycle, image_width, image_height);
 
   return kTfLiteOk;

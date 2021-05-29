@@ -205,11 +205,11 @@ int loop(int id)
   RespondToDetectionCar(error_reporter, car_score, no_car_score);
   RespondToDetectionBicycle(error_reporter, bicycle_score, no_bicycle_score);
 
-  if (person_score > no_person_score)
+  if (person_score > -40)
     return 1;
-  else if (car_score > no_car_score)
+  else if (car_score > -40)
     return 2;
-  else if (bicycle_score > no_bicycle_score)
+  else if (bicycle_score > -40)
     return 3;
   else
     return 0;

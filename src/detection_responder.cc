@@ -20,30 +20,39 @@ limitations under the License.
 // This dummy implementation writes person and no person scores to the error
 // console. Real applications will want to take some custom action instead, and
 // should implement their own versions of this function.
-void RespondToDetectionPerson(tflite::ErrorReporter* error_reporter,
-                        int8_t person_score, int8_t no_person_score) {
-  if (person_score > no_person_score) {
+void RespondToDetectionPerson(tflite::ErrorReporter *error_reporter,
+                              int8_t person_score, int8_t no_person_score)
+{
+  if (person_score > no_person_score)
+  {
     hx_drv_led_on(HX_DRV_LED_GREEN);
-  } else {
+  }
+  else
+  {
     hx_drv_led_off(HX_DRV_LED_GREEN);
   }
 
-  TF_LITE_REPORT_ERROR(error_reporter, " person score:%d  no person score %d",
-                       person_score, no_person_score);
+  TF_LITE_REPORT_ERROR(error_reporter, "     person score:%d",
+                       person_score);
 }
-void RespondToDetectionCar(tflite::ErrorReporter* error_reporter,
-                        int8_t car_score, int8_t no_car_score) {
-  if (car_score > no_car_score) {
+void RespondToDetectionCar(tflite::ErrorReporter *error_reporter,
+                           int8_t car_score, int8_t no_car_score)
+{
+  if (car_score > no_car_score)
+  {
     hx_drv_led_on(HX_DRV_LED_RED);
-  } else {
+  }
+  else
+  {
     hx_drv_led_off(HX_DRV_LED_RED);
   }
 
-  TF_LITE_REPORT_ERROR(error_reporter, "    car score:%d     no car score %d",
-                       car_score, no_car_score);
+  TF_LITE_REPORT_ERROR(error_reporter, "        car score:%d",
+                       car_score);
 }
-void RespondToDetectionBicycle(tflite::ErrorReporter* error_reporter,
-                        int8_t bicycle_score, int8_t no_bicycle_score) {
-  TF_LITE_REPORT_ERROR(error_reporter, "bicycle score:%d no bicycle score %d",
-                       bicycle_score, no_bicycle_score);
+void RespondToDetectionBicycle(tflite::ErrorReporter *error_reporter,
+                               int8_t bicycle_score, int8_t no_bicycle_score)
+{
+  TF_LITE_REPORT_ERROR(error_reporter, "    bicycle score:%d",
+                       bicycle_score);
 }
