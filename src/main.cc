@@ -28,6 +28,8 @@ void GPIO_INIT(void);
 
 char string_buf[100] = "test\n";
 
+#define accel_scale 10
+
 // This is the default main used on systems that have the standard C entry
 // point. Other devices (for example FreeRTOS or ESP32) that have different
 // requirements for entry code (like an app_main function) should specialize
@@ -35,8 +37,16 @@ char string_buf[100] = "test\n";
 int main(int argc, char *argv[])
 {
     uint32_t msec_x100 = 0;
+    int32_t int_buf;
+    uint32_t accel_x, accel_y, accel_z, accel_y_frac;
 
     hx_drv_uart_initial(UART_BR_115200);
+
+    if (hx_drv_accelerometer_initial() != HX_DRV_LIB_PASS)
+        hx_drv_uart_print("Accelerometer Initialize Fail\n");
+    else
+        hx_drv_uart_print("Accelerometer Initialize Success\n");
+
     hx_drv_uart_print("Testing\n");
     GPIO_INIT();
     setup();
@@ -49,6 +59,50 @@ int main(int argc, char *argv[])
     while (true)
     {
         // hx_drv_uart_print("Start time count: %5d.%1d\n", msec_x100 / 10, msec_x100 % 10);
+
+        // =========================
+        //      ACCELEROMETER
+        // =========================
+
+        uint32_t available_count = 0;
+        float x, y, z;
+        available_count = hx_drv_accelerometer_available_count();
+        // hx_drv_uart_print("Accel get FIFO: %d\n", available_count);
+        for (int i = 0; i < available_count; i++)
+        {
+            hx_drv_accelerometer_receive(&x, &y, &z);
+        }
+
+        int_buf = x * accel_scale; //scale value
+        if (int_buf < 0)
+            int_buf = int_buf * -1;
+        accel_x = int_buf / accel_scale;
+
+        int_buf = y * accel_scale; //scale value
+        if (int_buf < 0)
+            int_buf = int_buf * -1;
+        accel_y = int_buf / accel_scale;
+        accel_y_frac = int_buf % accel_scale;
+
+        int_buf = z * accel_scale; //scale value
+        if (int_buf < 0)
+            int_buf = int_buf * -1;
+        accel_z = int_buf / accel_scale;
+
+        // PRINT ACCEL
+        // sprintf(string_buf, "%d | %d.%d | %d G\n\n", accel_x, accel_y, accel_y_frac, accel_z);
+        // hx_drv_uart_print(string_buf);
+        // PRINT ACCEL
+
+        if (y > 1.5)
+        {
+            hx_drv_uart_print("!!!DANGER DANGER Gy = %d.%d!!!\n\n", accel_y, accel_y_frac);
+        }
+
+        // =========================
+        //      IMAGE + NN
+        // =========================
+
         switch (id)
         {
         case 0: // Right
@@ -75,7 +129,7 @@ int main(int argc, char *argv[])
             hx_drv_uart_print("Right result = %d, Left result = %d\n", right_result, left_result);
             if ((right_result != 0) || (left_result != 0))
             {
-                
+
                 if (right_result == left_result) // center
                 {
                     output = 3 * right_result + 1;
@@ -97,7 +151,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        hx_drv_uart_print("----------------------------------------------\n");
+        hx_drv_uart_print("----------------------------------------------\n\n\n");
         // msec_x100 = msec_x100 + 5;
         delay_ms(500);
 
