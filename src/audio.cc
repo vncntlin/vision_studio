@@ -1,6 +1,5 @@
 #include "audio.h"
 
-
 void PLAY_AUDIO(int track)
 {
     // track 0: "A person is..."
@@ -28,33 +27,41 @@ void PLAY_AUDIO(int track)
     case 1: // person
         num_samples = 15023 / 2;
         audio_data = person_data;
+        hx_drv_uart_print("A person is ");
         break;
     case 2: // car
         num_samples = 13871 / 2;
         audio_data = car_data;
+        hx_drv_uart_print("A car is ");
         break;
     case 3: // bike
         num_samples = 13871 / 2;
         audio_data = bike_data;
+        hx_drv_uart_print("A bike is ");
         break;
     case 4: // right
         num_samples = 13295 / 2;
         audio_data = right_data;
+        hx_drv_uart_print("on your right.\n");
         break;
     case 5: // front
         num_samples = 14447 / 2;
         audio_data = front_data;
+        hx_drv_uart_print("in front of you.\n");
         break;
     case 6: // left
         num_samples = 13295 / 2;
         audio_data = left_data;
+        hx_drv_uart_print("on your left.\n");
         break;
     default:
+        num_samples = 0;
+        audio_data = 0;
         break;
     }
 
     // ---START---
-    hx_drv_uart_print("PLAY AUDIO TRACK: %d\n", track);
+    // hx_drv_uart_print("PLAY AUDIO TRACK: %d\n", track);
     while (1)
     {
         real_sec = sec_cnt % 64;
@@ -122,5 +129,5 @@ void PLAY_AUDIO(int track)
         // board_delay_cycle(30);
         sec_cnt++;
     }
-    hx_drv_uart_print("AUDIO FINISH\n");
+    // hx_drv_uart_print("AUDIO FINISH\n");
 }
