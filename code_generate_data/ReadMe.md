@@ -13,7 +13,7 @@ Use the following command to run
 python download_and_convert_data.py --dataset_name=visualwakewords --dataset_dir=/tmp/visualwakewords
 
 ----------------
-Those file w/ coco2017 in their name are for the coco 2017 dataset
+Files w/ coco2017 in their name are for the coco 2017 dataset
 
 I didn't handle the downloading process in the code, so please download & unzip train2017, val2017, annotationstrainval2017 first
 
