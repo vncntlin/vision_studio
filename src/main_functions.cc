@@ -23,9 +23,9 @@ limitations under the License.
 #include "detection_responder.h"
 #include "image_provider.h"
 #include "model_settings.h"
-#include "vww_cnn_v4_10_person.h"
-#include "vww_cnn_v4_15_car.h"
-#include "vww_cnn_v4_15_bicycle.h"
+#include "vww_mobile_v5_25_person.h"
+#include "vww_mobile_v5_25_car.h"
+#include "vww_mobile_v5_25_bike.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace
@@ -49,12 +49,12 @@ namespace
   // signed value.
 
   // An area of memory to use for input, output, and intermediate arrays.
-  constexpr int kTensorArenaSize_person = 144 * 1024;
-  constexpr int kTensorArenaSize_car = 144 * 1024;
-  constexpr int kTensorArenaSize_bicycle = 144 * 1024;
-  static uint8_t tensor_arena_person[kTensorArenaSize_person];
-  static uint8_t tensor_arena_car[kTensorArenaSize_car];
-  static uint8_t tensor_arena_bicycle[kTensorArenaSize_bicycle];
+  constexpr int kTensorArenaSize_person = 152 * 1024;
+  constexpr int kTensorArenaSize_car = 152 * 1024;
+  constexpr int kTensorArenaSize_bicycle = 152 * 1024;
+  alignas(16) static uint8_t tensor_arena_person[kTensorArenaSize_person];
+  alignas(16) static uint8_t tensor_arena_car[kTensorArenaSize_car];
+  alignas(16) static uint8_t tensor_arena_bicycle[kTensorArenaSize_bicycle];
 } // namespace
 
 // The name of this function is important for Arduino compatibility.
@@ -68,7 +68,7 @@ void setup()
 
   // Map the model into a usable data structure. This doesn't involve any
   // copying or parsing, it's a very lightweight operation.
-  model_person = tflite::GetModel(vww_cnn_v4_10_person_tflite);
+  model_person = tflite::GetModel(vww_mobile_v5_25_person_tflite);
   if (model_person->version() != TFLITE_SCHEMA_VERSION)
   {
     TF_LITE_REPORT_ERROR(error_reporter,
@@ -77,7 +77,7 @@ void setup()
                          model_person->version(), TFLITE_SCHEMA_VERSION);
     return;
   }
-  model_car = tflite::GetModel(vww_cnn_v4_15_car_tflite);
+  model_car = tflite::GetModel(vww_mobile_v5_25_car_tflite);
   if (model_car->version() != TFLITE_SCHEMA_VERSION)
   {
     TF_LITE_REPORT_ERROR(error_reporter,
@@ -86,7 +86,7 @@ void setup()
                          model_car->version(), TFLITE_SCHEMA_VERSION);
     return;
   }
-  model_bicycle = tflite::GetModel(vww_cnn_v4_15_bicycle_tflite);
+  model_bicycle = tflite::GetModel(vww_mobile_v5_25_bike_tflite);
   if (model_bicycle->version() != TFLITE_SCHEMA_VERSION)
   {
     TF_LITE_REPORT_ERROR(error_reporter,
@@ -103,13 +103,12 @@ void setup()
   //
   // tflite::AllOpsResolver resolver;
   // NOLINTNEXTLINE(runtime-global-variables)
-  static tflite::MicroMutableOpResolver<7> micro_op_resolver;
+  static tflite::MicroMutableOpResolver<6> micro_op_resolver;
   micro_op_resolver.AddConv2D();
   micro_op_resolver.AddDepthwiseConv2D();
   micro_op_resolver.AddFullyConnected();
-  micro_op_resolver.AddMaxPool2D();
+  micro_op_resolver.AddMean();
   micro_op_resolver.AddRelu();
-  micro_op_resolver.AddReshape();
   micro_op_resolver.AddSoftmax();
 
   // static tflite::MicroMutableOpResolver<5> micro_op_resolver_car;
@@ -205,12 +204,15 @@ int loop(int id)
   RespondToDetectionCar(error_reporter, car_score, no_car_score);
   RespondToDetectionBicycle(error_reporter, bicycle_score, no_bicycle_score);
 
-  if (person_score > -50)
-    return 1;
-  else if (car_score > -50)
-    return 2;
-  else if (bicycle_score > -50)
-    return 3;
-  else
-    return 0;
+  int8_t result = 0;
+  if (person_score > 0)
+    result = result + 100;
+
+  if (car_score > -30)
+    result = result + 10;
+
+  if (bicycle_score > -40)
+    result = result + 1;
+
+  return result;
 }
