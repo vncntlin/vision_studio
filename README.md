@@ -10,6 +10,8 @@ This project presents a visual-based voice alert system. The system detects diff
 * Speaker
 
 The WE-I Plus EVB is connected to the DAC module through I2C protocol, and the DAC module is connected to the speaker with a 3.5mm audio connector.
+<img src="https://github.com/vncntlin/vision_studio/blob/main/hardware_setup.png" width="100%" height="100%" />
+
 
 ### Software
 No additional software required
