@@ -21,8 +21,9 @@ No additional software required
 
 ### Flashing the image
 1. Clone the repository
-
-    `$ git clone https://github.com/vncntlin/vision_studio.git`
+```
+    $ git clone https://github.com/vncntlin/vision_studio.git
+```
 2. Connect the WE-I EVB to the PC with an USB cable
 3. Open Tera Term and select "COMx: USB Serial Port (COMx)"
 4. Change baud to 115200
