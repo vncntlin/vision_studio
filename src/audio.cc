@@ -54,6 +54,12 @@ void PLAY_AUDIO(int track)
         audio_data = left_data;
         hx_drv_uart_print("on your left.\n");
         break;
+    case 7: // danger
+        num_samples = 28271;
+        // num_samples = 10000 / 2;
+        audio_data = danger_data;
+        hx_drv_uart_print("Danger, Danger.\n");
+        break;
     default:
         num_samples = 0;
         audio_data = 0;

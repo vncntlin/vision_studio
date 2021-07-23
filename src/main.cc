@@ -36,7 +36,7 @@ char string_buf[100] = "test\n";
 // this main.cc file in a target-specific subfolder.
 int main(int argc, char *argv[])
 {
-    uint32_t msec_x100 = 0;
+    // uint32_t msec_x100 = 0;
     int32_t int_buf;
     uint32_t accel_x, accel_y, accel_z, accel_y_frac;
 
@@ -52,10 +52,14 @@ int main(int argc, char *argv[])
     setup();
 
     int id = 0;
-    int output_record = 0;
-    int output = 0;
+    // int output_record = 0;
+    // int output = 0;
     int left_result = 0;
     int right_result = 0;
+    uint32_t iter = 0;
+    uint32_t rightres = 0;
+    uint32_t leftres = 0;
+
     while (true)
     {
         // hx_drv_uart_print("Start time count: %5d.%1d\n", msec_x100 / 10, msec_x100 % 10);
@@ -94,9 +98,10 @@ int main(int argc, char *argv[])
         // hx_drv_uart_print(string_buf);
         // PRINT ACCEL
 
-        if (y > 1.5)
+        if (y > 1)
         {
             hx_drv_uart_print("!!!DANGER DANGER Gy = %d.%d!!!\n\n", accel_y, accel_y_frac);
+            PLAY_AUDIO(7);
         }
 
         // =========================
@@ -117,43 +122,64 @@ int main(int argc, char *argv[])
         default:
             break;
         }
-
+        uint32_t tick_start = 0;
+        uint32_t tick_end = 0;
         if (id == 0)
         {
+            hx_drv_tick_start();
+            hx_drv_tick_get(&tick_start);
             right_result = loop(id);
+            hx_drv_tick_get(&tick_end);
+            
+            hx_drv_uart_print("START: %d, END: %d", tick_start, tick_end);
         }
         if (id == 1)
         {
             left_result = loop(id);
-            hx_drv_uart_print("----------------------------------------------\n");
-            hx_drv_uart_print("Right result = %d, Left result = %d\n", right_result, left_result);
-            if ((right_result != 0) || (left_result != 0))
+            hx_drv_uart_print("             --pcb--\n");
+            hx_drv_uart_print("Right result = %03d\nLeft  result = %03d\n", right_result, left_result);
+
+            for (iter = 0; iter < 3; iter = iter + 1)
             {
+                if (iter == 0)
+                {
+                    rightres = right_result / 100 % 10;
+                    leftres = left_result / 100 % 10;
+                }
+                else if (iter == 1)
+                {
+                    rightres = right_result / 10 % 10;
+                    leftres = left_result / 10 % 10;
+                }
+                else
+                {
+                    rightres = right_result % 10;
+                    leftres = left_result % 10;
+                }
 
-                if (right_result == left_result) // center
-                {
-                    output = 3 * right_result + 1;
-                }
-                else if (right_result != 0) // right
-                {
-                    output = 3 * right_result + 0;
-                }
-                else // left
-                {
-                    output = 3 * left_result + 2;
-                }
+                // hx_drv_uart_print("TEST: %d, %d\n", rightres, leftres);
 
-                if (output != output_record)
+                if (rightres == 1 && leftres == 1) // center
                 {
-                    PLAY_AUDIO(output / 3);
-                    PLAY_AUDIO(output % 3 + 4);
-                    output_record = output;
+                    PLAY_AUDIO(iter + 1);
+                    PLAY_AUDIO(5);
+                }
+                else if (rightres == 1) // right
+                {
+                    PLAY_AUDIO(iter + 1);
+                    PLAY_AUDIO(4);
+                }
+                else if (leftres == 1) // left
+                {
+                    PLAY_AUDIO(iter + 1);
+                    PLAY_AUDIO(6);
                 }
             }
+            hx_drv_uart_print("===========================================\n\n\n");
         }
-        hx_drv_uart_print("----------------------------------------------\n\n\n");
+
         // msec_x100 = msec_x100 + 5;
-        delay_ms(500);
+        delay_ms(50);
 
         if (id == 0)
             id = 1;

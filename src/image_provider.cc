@@ -48,7 +48,6 @@ TfLiteStatus GetImage(tflite::ErrorReporter *error_reporter, int image_width,
   //   img_ptr = (uint8_t *)g_pimg_config.raw_address + g_pimg_config.img_width * (g_pimg_config.img_height * 2 / 4);
   //   break;
   default:
-    img_ptr = 0;
     break;
   }
 

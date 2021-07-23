@@ -10,6 +10,7 @@ extern unsigned char car_data[];
 extern unsigned char right_data[];
 extern unsigned char front_data[];
 extern unsigned char left_data[];
+extern unsigned char danger_data[];
 
 void PLAY_AUDIO(int track);
 
