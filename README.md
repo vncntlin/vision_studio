@@ -30,7 +30,7 @@ No additional software required
 3. Open Tera Term and select "COMx: USB Serial Port (COMx)"
 4. Change baud to 115200
 5. Keep pressing "1" on the keyboard and press the reset button on the WE-I Plus EVB
-6. Transfer `output_gun.img` to the WE-I Plus EVB
+6. Transfer `output_gnu.img` to the WE-I Plus EVB
 7. Press the reset button again and run the image, and the system is ready to go
 
 ### Portable system
