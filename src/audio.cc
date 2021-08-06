@@ -1,4 +1,5 @@
 #include "audio.h"
+#include "language.h"
 
 void PLAY_AUDIO(int track)
 {
@@ -25,34 +26,70 @@ void PLAY_AUDIO(int track)
     switch (track)
     {
     case 1: // person
+#ifdef CHINESE
+        num_samples = 9816 / 2;
+        audio_data = person_chinese_data;
+        hx_drv_uart_print("PERSON\n");
+#else
         num_samples = 15023 / 2;
         audio_data = person_data;
         hx_drv_uart_print("A person is ");
+#endif
         break;
     case 2: // car
+#ifdef CHINESE
+        num_samples = 9528 / 2;
+        audio_data = car_chinese_data;
+        hx_drv_uart_print("CAR\n");
+#else
         num_samples = 13871 / 2;
         audio_data = car_data;
         hx_drv_uart_print("A car is ");
+#endif
         break;
     case 3: // bike
+#ifdef CHINESE
+        num_samples = 13560 / 2;
+        audio_data = bike_chinese_data;
+        hx_drv_uart_print("BIKE\n");
+#else
         num_samples = 13871 / 2;
         audio_data = bike_data;
         hx_drv_uart_print("A bike is ");
+#endif
         break;
     case 4: // right
+#ifdef CHINESE
+        num_samples = 12696 / 2;
+        audio_data = right_chinese_data;
+        hx_drv_uart_print("RIGHT ");
+#else
         num_samples = 13295 / 2;
         audio_data = right_data;
         hx_drv_uart_print("on your right.\n");
+#endif
         break;
     case 5: // front
+#ifdef CHINESE
+        num_samples = 13272 / 2;
+        audio_data = front_chinese_data;
+        hx_drv_uart_print("FRONT ");
+#else
         num_samples = 14447 / 2;
         audio_data = front_data;
         hx_drv_uart_print("in front of you.\n");
+#endif
         break;
     case 6: // left
+#ifdef CHINESE
+        num_samples = 12984 / 2;
+        audio_data = left_chinese_data;
+        hx_drv_uart_print("LEFT ");
+#else
         num_samples = 13295 / 2;
         audio_data = left_data;
         hx_drv_uart_print("on your left.\n");
+#endif
         break;
     case 7: // danger
         num_samples = 28271;

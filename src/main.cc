@@ -17,7 +17,7 @@ limitations under the License.
 #include "hx_drv_tflm.h"
 #include "stdio.h"
 #include "audio.h"
-
+#include "language.h"
 
 hx_drv_gpio_config_t hal_gpio_0;
 hx_drv_gpio_config_t hal_gpio_1;
@@ -195,18 +195,33 @@ int main(int argc, char *argv[])
 
                 if (rightres == 1 && leftres == 1) // center
                 {
+#ifdef ENGLISH
                     PLAY_AUDIO(iter + 1);
                     PLAY_AUDIO(5);
+#else
+                    PLAY_AUDIO(5);
+                    PLAY_AUDIO(iter + 1);
+#endif
                 }
                 else if (rightres == 1) // right
                 {
+#ifdef ENGLISH
                     PLAY_AUDIO(iter + 1);
                     PLAY_AUDIO(4);
+#else
+                    PLAY_AUDIO(4);
+                    PLAY_AUDIO(iter + 1);
+#endif
                 }
                 else if (leftres == 1) // left
                 {
+#ifdef ENGLISH
                     PLAY_AUDIO(iter + 1);
                     PLAY_AUDIO(6);
+#else
+                    PLAY_AUDIO(6);
+                    PLAY_AUDIO(iter + 1);
+#endif
                 }
             }
             hx_drv_uart_print("===========================================\n\n\n");
