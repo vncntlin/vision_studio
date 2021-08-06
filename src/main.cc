@@ -14,10 +14,10 @@ limitations under the License.
 ==============================================================================*/
 
 #include "main_functions.h"
-
 #include "hx_drv_tflm.h"
 #include "stdio.h"
 #include "audio.h"
+
 
 hx_drv_gpio_config_t hal_gpio_0;
 hx_drv_gpio_config_t hal_gpio_1;
@@ -25,6 +25,14 @@ hx_drv_gpio_config_t hal_gpio_2;
 
 volatile void delay_ms(uint32_t ms_input);
 void GPIO_INIT(void);
+
+#define accel_scale 10
+typedef struct
+{
+    uint8_t symbol;
+    uint32_t int_part;
+    uint32_t frac_part;
+} accel_type;
 
 char string_buf[100] = "test\n";
 
@@ -38,7 +46,7 @@ int main(int argc, char *argv[])
 {
     // uint32_t msec_x100 = 0;
     int32_t int_buf;
-    uint32_t accel_x, accel_y, accel_z, accel_y_frac;
+    accel_type accel_x, accel_y, accel_z;
 
     hx_drv_uart_initial(UART_BR_115200);
 
@@ -79,28 +87,54 @@ int main(int argc, char *argv[])
 
         int_buf = x * accel_scale; //scale value
         if (int_buf < 0)
+        {
             int_buf = int_buf * -1;
-        accel_x = int_buf / accel_scale;
+            accel_x.symbol = '-';
+        }
+        else
+        {
+            accel_x.symbol = '+';
+        }
+        accel_x.int_part = int_buf / accel_scale;
+        accel_x.frac_part = int_buf % accel_scale;
 
         int_buf = y * accel_scale; //scale value
         if (int_buf < 0)
+        {
             int_buf = int_buf * -1;
-        accel_y = int_buf / accel_scale;
-        accel_y_frac = int_buf % accel_scale;
+            accel_y.symbol = '-';
+        }
+        else
+        {
+            accel_y.symbol = '+';
+        }
+        accel_y.int_part = int_buf / accel_scale;
+        accel_y.frac_part = int_buf % accel_scale;
 
         int_buf = z * accel_scale; //scale value
         if (int_buf < 0)
+        {
             int_buf = int_buf * -1;
-        accel_z = int_buf / accel_scale;
+            accel_z.symbol = '-';
+        }
+        else
+        {
+            accel_z.symbol = '+';
+        }
+        accel_z.int_part = int_buf / accel_scale;
+        accel_z.frac_part = int_buf % accel_scale;
 
         // PRINT ACCEL
-        // sprintf(string_buf, "%d | %d.%d | %d G\n\n", accel_x, accel_y, accel_y_frac, accel_z);
+        // sprintf(string_buf, "%c%1d.%1d | %c%1d.%1d | %c%1d.%1d G\n",
+        //         accel_x.symbol, accel_x.int_part, accel_x.frac_part,
+        //         accel_y.symbol, accel_y.int_part, accel_y.frac_part,
+        //         accel_z.symbol, accel_z.int_part, accel_z.frac_part);
         // hx_drv_uart_print(string_buf);
         // PRINT ACCEL
 
-        if (y > 1)
+        if (accel_y.int_part >= 2)
         {
-            hx_drv_uart_print("!!!DANGER DANGER Gy = %d.%d!!!\n\n", accel_y, accel_y_frac);
+            hx_drv_uart_print("!!!DANGER DANGER!!!\n\n");
             PLAY_AUDIO(7);
         }
 
@@ -130,7 +164,7 @@ int main(int argc, char *argv[])
             hx_drv_tick_get(&tick_start);
             right_result = loop(id);
             hx_drv_tick_get(&tick_end);
-            
+
             hx_drv_uart_print("START: %d, END: %d", tick_start, tick_end);
         }
         if (id == 1)
